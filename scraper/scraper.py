@@ -3,7 +3,6 @@ import requests
 from math import ceil
 from bs4 import BeautifulSoup
 import random
-from re import sub
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 OPR/102.0.0.0'
@@ -58,18 +57,18 @@ class product:
 
         response = requests.get(f"{baseurl}{mainImg}", headers=headers)
         if response.status_code == 200:
-            with open(f"./imgtoimport/{self.imgname}_{len(urls)}.jpg", 'wb') as plik:
+            with open(f"../results/images/{self.imgname}_{len(urls)}.jpg", 'wb') as plik:
                 plik.write(response.content)
-            urls.append(f"/var/www/html/imgtoimport/{self.imgname}_{len(urls)}.jpg")
+            urls.append(f"/var/www/html/images/{self.imgname}_{len(urls)}.jpg")
 
         imgs = soup.find_all('div', class_='col-xs-3 col-sm-4 col-md-3 mt-1')
 
         for image in imgs:
             response = requests.get(f"{baseurl}{image.find('a')['href']}", headers=headers)
             if response.status_code == 200:
-                with open(f"./imgtoimport/{self.imgname}_{len(urls)}.jpg", 'wb') as plik:
+                with open(f"../results/images/{self.imgname}_{len(urls)}.jpg", 'wb') as plik:
                     plik.write(response.content)
-                urls.append(f"/var/www/html/imgtoimport/{self.imgname}_{len(urls)}.jpg")
+                urls.append(f"/var/www/html/images/{self.imgname}_{len(urls)}.jpg")
 
             if len(urls)>1:
                 break
@@ -129,7 +128,7 @@ class scraper:
         for cat in self.subCategories:
             categories .append(cat.toDict())
         dataFrame = pd.DataFrame(categories)
-        dataFrame.to_csv('./results/categories.csv', sep='>', encoding='utf-8')
+        dataFrame.to_csv('../results/categories.csv', sep='>', encoding='utf-8')
 
     def searchPages(self, cat:category, numOfPages):
         for i in range(numOfPages):
@@ -140,7 +139,7 @@ class scraper:
                 r = requests.get(f"{baseurl}{prod['href']}", headers=headers)
                 soup = BeautifulSoup(r.content, 'lxml')
                 cat.numberOfProducts += 1
-                p = product(soup, cat.categoryName, f"{cat.numberOfCategory}{cat.numberOfProducts}")
+                p = product(soup, cat.categoryName, f"{cat.numberOfCategory}_{cat.numberOfProducts}")
                 if p.valid:
                     self.products.append(p.toDict())
 
@@ -152,7 +151,7 @@ class scraper:
             numOfPages = ceil(size/25)%2
             self.searchPages(cat, numOfPages)
         dataFrame = pd.DataFrame(self.products)
-        dataFrame.to_csv('./results/products.csv', sep='>', encoding='utf-8')
+        dataFrame.to_csv('../results/products.csv', sep='>', encoding='utf-8')
     
     def scrape(self):
         self.scrapeMainCategories()
