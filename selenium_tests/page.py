@@ -29,6 +29,14 @@ class MainPage(BasePage):
         element = element.find_element(By.TAG_NAME, 'a')  # looking for a link in user-info div
         element.click()
 
+    def click_on_account(self):
+        self.driver.find_element(*MainPageLocators.ACCOUNT).click()
+
+    def is_name_surname_matching(self, name: str, surname: str):
+        element = self.driver.find_element(*CreateAccountPageLocators.USER_INFO)
+        element = element.find_element(By.TAG_NAME, 'span')
+        return ' '.join([name, surname]) == element.text
+
 
 class SearchResultPage(MainPage):
 
@@ -73,28 +81,106 @@ class CartPage(MainPage):
 
         return len(element)
 
+    def proceed_to_checkout(self):
+        element = self.driver.find_element(*CartPageLocators.CART_DETAILS)
+        element = element.find_element(*CartPageLocators.PROCEED_TO_CHECKOUT_BUTTON)
+        element.click()
+
+
+class CheckoutPage(BasePage):
+    # this will fail if there are any addresses previously created
+    def fill_in_checkout_info_and_submit(self, info: dict):
+        for val in info:
+            # text data
+            if info[val] is not None and info[val] not in (True, False):
+                locator = getattr(CheckoutPageLocators, f'{val}'.upper())
+                # element = self.driver.find_element(*locator)
+                element = WebDriverWait(self.driver, 10).until(
+                    ec.presence_of_element_located(locator)
+                )
+                element.clear()
+                element.send_keys(info[val])
+            # checkbox
+            elif info[val] is not None:
+                if val == 'USE_SAME_ADDRESS' and info[val] is False:  # same address checkbox is set by default
+                    locator = getattr(CheckoutPageLocators, f'{val}'.upper())
+                    WebDriverWait(self.driver, 10).until(
+                        ec.presence_of_element_located(locator)
+                    ).click()
+
+        element = WebDriverWait(self.driver, 10).until(
+            ec.presence_of_element_located(CheckoutPageLocators.SUBMIT_DATA_AREA)
+        )
+        element = element.find_element(*CheckoutPageLocators.SUBMIT_DATA_BUTTON)
+        element.click()
+
+        # delivery option
+        self.driver.find_element(*CheckoutPageLocators.CONFIRM_DELIVERY_BUTTON).click()
+
+        # payment option
+        WebDriverWait(self.driver, 10).until(
+            ec.presence_of_element_located(CheckoutPageLocators.PAYMENT_OPTION)
+        ).click()
+
+        self.driver.find_element(*CheckoutPageLocators.TOS).click()
+
+        element = self.driver.find_element(*CheckoutPageLocators.SUBMIT_ORDER_AREA)
+        element = element.find_element(*CheckoutPageLocators.SUBMIT_ORDER_BUTTON)
+        element.click()
+
+
+class OrderConfirmationPage(MainPage):
+    def get_order_id(self) -> str:
+        element = WebDriverWait(self.driver, 10).until(
+            ec.presence_of_element_located(OrderConfirmationLocators.ORDER_ID)
+        )
+        order_id = element.text.split(":")[1].strip()
+
+        return order_id
+
 
 class MyAccountPage(MainPage):
-    def click_sing_up(self):
+    def click_sign_up(self):
         element = self.driver.find_element(*MyAccountLocators.SIGN_UP)
         element.click()
+
+    def login(self, email: str, password: str):
+        self.driver.find_element(*MyAccountLocators.EMAIL).send_keys(email)
+        self.driver.find_element(*MyAccountLocators.PASSWORD).send_keys(password)
+        self.driver.find_element(*MyAccountLocators.SUBMIT_LOGIN).click()
+
+    def go_to_order_history(self):
+        self.driver.find_element(*MyAccountLocators.ORDER_HISTORY).click()
+
+
+class OrderHistoryPage(MainPage):
+    def get_order_ids(self) -> list:
+        element = self.driver.find_element(*OrderHistoryLocators.ORDERS)
+        order_ids = element.find_elements(*OrderHistoryLocators.ORDER_ID)
+
+        return [order_id.text for order_id in order_ids]
+
+    def get_order_status(self, order_id: str) -> str:
+        element = self.driver.find_element(By.XPATH, f"//th[text()='{order_id}']")
+        order_status = element.find_element(By.XPATH, "./following-sibling::td[4]/span").text
+        return order_status
 
 
 class CreateAccountPage(MainPage):
     def check_sex_radio(self, sex: str):
-        locator = CreateAccountLocators.MALE_RADIO if sex == 'male' else CreateAccountLocators.FEMALE_RADIO
+        locator = CreateAccountPageLocators.MALE_RADIO if sex == 'male' else CreateAccountPageLocators.FEMALE_RADIO
         element = self.driver.find_element(*locator)
         element.click()
 
     def input_text_fields(self, first_name: str, last_name: str, email: str, password: str, dob: str):
-        self.driver.find_element(*CreateAccountLocators.FIRST_NAME).send_keys(first_name)
-        self.driver.find_element(*CreateAccountLocators.LAST_NAME).send_keys(last_name)
-        self.driver.find_element(*CreateAccountLocators.EMAIL).send_keys(email)
-        self.driver.find_element(*CreateAccountLocators.PASSWORD).send_keys(password)
-        self.driver.find_element(*CreateAccountLocators.DOB).send_keys(dob)
+        self.driver.find_element(*CreateAccountPageLocators.FIRST_NAME).send_keys(first_name)
+        self.driver.find_element(*CreateAccountPageLocators.LAST_NAME).send_keys(last_name)
+        self.driver.find_element(*CreateAccountPageLocators.EMAIL).send_keys(email)
+        self.driver.find_element(*CreateAccountPageLocators.PASSWORD).send_keys(password)
+        self.driver.find_element(*CreateAccountPageLocators.DOB).send_keys(dob)
 
     def check_opt_ins(self, check_data: list):
-        element = self.driver.find_elements(*CreateAccountLocators.OPT_INS)
+        element = self.driver.find_elements(*CreateAccountPageLocators.OPT_INS)
         elements = []
 
         for x in element:
@@ -105,10 +191,5 @@ class CreateAccountPage(MainPage):
                 element.click()
 
     def send_form(self):
-        element = self.driver.find_element(*CreateAccountLocators.SUBMIT_BUTTON)
+        element = self.driver.find_element(*CreateAccountPageLocators.SUBMIT_BUTTON)
         element.click()
-
-    def is_name_surname_matching(self, name: str, surname: str):
-        element = self.driver.find_element(*CreateAccountLocators.USER_INFO)
-        element = element.find_element(By.TAG_NAME, 'span')
-        return ' '.join([name, surname]) == element.text
