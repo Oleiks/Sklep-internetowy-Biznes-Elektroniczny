@@ -86,19 +86,11 @@ class CreateAccountPage(MainPage):
         element = self.driver.find_element(*locator)
         element.click()
 
-    def input_name(self, first_name: str):
+    def input_text_fields(self, first_name: str, last_name: str, email: str, password: str, dob: str):
         self.driver.find_element(*CreateAccountLocators.FIRST_NAME).send_keys(first_name)
-
-    def input_surname(self, last_name: str):
         self.driver.find_element(*CreateAccountLocators.LAST_NAME).send_keys(last_name)
-
-    def input_email(self, email: str):
         self.driver.find_element(*CreateAccountLocators.EMAIL).send_keys(email)
-
-    def input_password(self, password: str):
         self.driver.find_element(*CreateAccountLocators.PASSWORD).send_keys(password)
-
-    def input_dob(self, dob: str):
         self.driver.find_element(*CreateAccountLocators.DOB).send_keys(dob)
 
     def check_opt_ins(self, check_data: list):

@@ -1,6 +1,5 @@
 import random
 import unittest
-import time
 import string
 
 from selenium import webdriver
@@ -74,13 +73,14 @@ class TestCases(unittest.TestCase):
         my_account_page.click_sing_up()
 
         create_account_page = page.CreateAccountPage(self.driver)
-        # this could be written more easily by doing the same thing as with checkboxes
         create_account_page.check_sex_radio(sing_up_data['sex'])
-        create_account_page.input_name(sing_up_data['name'])
-        create_account_page.input_surname(sing_up_data['surname'])
-        create_account_page.input_email(sing_up_data['email'])
-        create_account_page.input_password(sing_up_data['password'])
-        create_account_page.input_dob(sing_up_data['dob'])
+        create_account_page.input_text_fields(
+            sing_up_data['name'],
+            sing_up_data['surname'],
+            sing_up_data['email'],
+            sing_up_data['password'],
+            sing_up_data['dob']
+        )
         checkbox_values = list(sing_up_data.values())[5:len(sing_up_data)]
         create_account_page.check_opt_ins(checkbox_values)
         create_account_page.send_form()
