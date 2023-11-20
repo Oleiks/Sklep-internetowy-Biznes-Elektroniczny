@@ -124,7 +124,7 @@ class TestCases(unittest.TestCase):
         # and no addresses were previously added
         main_page.click_log_in()
         my_account_page = page.MyAccountPage(self.driver)
-        # this is hardcoded and needs to be changed
+        # this is hardcoded, you need to create an account and insert the credentials here
         my_account_page.login('P182WB89Y1@test.com', self.sing_up_data['password'])
 
         self.add_random_to_cart_by_name('humming')  # to be changed
@@ -136,7 +136,6 @@ class TestCases(unittest.TestCase):
         checkout_page.fill_in_checkout_info_and_submit(self.checkout_data)
 
         order_confirmation_page = page.OrderConfirmationPage(self.driver)
-        print(f'order_id:{order_confirmation_page.get_order_id()}')
         order_id = order_confirmation_page.get_order_id()
 
         main_page.click_on_account()

@@ -45,18 +45,27 @@ class CategoryPage(MainPage):
     def add_random_products_from_category(self):
         product_names = []
 
-        while len(product_names) < 5:  # this won't work if there is a product that is unavailable
+        while len(product_names) < 10:  # this won't work if there is a product that is unavailable
             products = self.driver.find_element(*CategoryProductsLocators.PRODUCT_AREA)
             products = products.find_elements(*CategoryProductsLocators.INDIVIDUAL_PRODUCT)
             for product in products:
+                product = product.find_element(*CategoryProductsLocators.PRODUCT_NAME)
                 if product.text not in product_names:
                     product_names.append(product.text)
+                    product = product.find_element(*CategoryProductsLocators.PRODUCT_NAME_LINK)
                     product.click()
                     product_page = ProductPage(self.driver)
-                    product_page.add_product_to_cart()
-                    WebDriverWait(self.driver, 10).until(
-                        ec.presence_of_element_located(ProductPageLocators.POPUP_DIALOG)
-                    )
+
+                    product_page.add_product_to_cart(random.randint(1, 4))
+                    # Code bellow doesn't work because if there isn't sufficient number of items,
+                    # the popup dialog never shows up
+
+                    # WebDriverWait(self.driver, 10).until(
+                    #     ec.presence_of_element_located(ProductPageLocators.POPUP_DIALOG)
+                    # )
+
+                    # There needs to be some time before the product gets added to cart, this works for now
+                    time.sleep(0.5)
                     self.driver.back()
                     break
 
@@ -72,10 +81,27 @@ class ProductPage(MainPage):
 
     # returns the name of the product
     # TODO: create an exception/ if clause if the product is unavailable
-    def add_product_to_cart(self) -> str:
-        # quantity = self.driver.find_element(*ProductPageLocators.QUANTITY)
-        # quantity.clear()
-        # quantity.send_keys(amount) # amount == param
+    # def add_product_to_cart(self) -> str:
+    #     # quantity = self.driver.find_element(*ProductPageLocators.QUANTITY)
+    #     # quantity.clear()
+    #     # quantity.send_keys(amount) # amount == param
+    #     element = self.driver.find_element(*ProductPageLocators.ADD_TO_CART_BUTTON)
+    #     product_name = self.driver.find_element(*ProductPageLocators.PRODUCT_NAME)
+    #     element.click()
+    #     return product_name.text
+    def add_product_to_cart(self, amount: int = 1) -> str:
+        # Check if the product is available by looking for a specific element
+        # Assuming the availability indicator is present, proceed to add to cart
+        add = self.driver.find_element(
+            By.CSS_SELECTOR,
+            "#add-to-cart-or-refresh > div.product-add-to-cart.js-product-add-to-cart > div > div.qty "
+            "> div > span.input-group-btn-vertical > "
+            "button.btn.btn-touchspin.js-touchspin.bootstrap-touchspin-up",
+        )
+
+        for _ in range(amount - 1):
+            add.click()
+
         element = self.driver.find_element(*ProductPageLocators.ADD_TO_CART_BUTTON)
         product_name = self.driver.find_element(*ProductPageLocators.PRODUCT_NAME)
         element.click()

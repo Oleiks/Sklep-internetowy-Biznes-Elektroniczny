@@ -92,4 +92,5 @@ class OrderConfirmationLocators(MainPageLocators):
 class CategoryProductsLocators(MainPageLocators):
     PRODUCT_AREA = (By.CLASS_NAME, 'products.row')
     INDIVIDUAL_PRODUCT = (By.TAG_NAME, 'article')
+    PRODUCT_NAME = (By.CLASS_NAME, 'h3.product-title')
     PRODUCT_NAME_LINK = (By.TAG_NAME, 'a')
