@@ -18,6 +18,7 @@ class ProductPageLocators(MainPageLocators):
     POPUP_DIALOG = (By.CLASS_NAME, 'cart-content')
     POPUP_DIALOG_CART_BUTTON = (By.CLASS_NAME, 'btn.btn-primary')
     PRODUCT_NAME = (By.CLASS_NAME, 'h1')
+    QUANTITY = (By.ID, 'quantity_wanted')
 
 
 class CartPageLocators(MainPageLocators):
@@ -86,3 +87,9 @@ class CheckoutPageLocators(object):
 
 class OrderConfirmationLocators(MainPageLocators):
     ORDER_ID = (By.ID, 'order-reference-value')
+
+
+class CategoryProductsLocators(MainPageLocators):
+    PRODUCT_AREA = (By.CLASS_NAME, 'products.row')
+    INDIVIDUAL_PRODUCT = (By.TAG_NAME, 'article')
+    PRODUCT_NAME_LINK = (By.TAG_NAME, 'a')

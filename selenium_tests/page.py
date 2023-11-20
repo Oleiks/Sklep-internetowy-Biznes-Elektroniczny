@@ -5,7 +5,6 @@ from selenium import webdriver
 from selenium.webdriver import Keys
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
-
 from locator import *
 
 
@@ -37,6 +36,30 @@ class MainPage(BasePage):
         element = element.find_element(By.TAG_NAME, 'span')
         return ' '.join([name, surname]) == element.text
 
+    def go_to_category(self, category_num: int):
+        # category iterates itself by 3 for some reason
+        self.driver.find_element(By.ID, f'category-{category_num * 3}').click()
+
+
+class CategoryPage(MainPage):
+    def add_random_products_from_category(self):
+        product_names = []
+
+        while len(product_names) < 5:  # this won't work if there is a product that is unavailable
+            products = self.driver.find_element(*CategoryProductsLocators.PRODUCT_AREA)
+            products = products.find_elements(*CategoryProductsLocators.INDIVIDUAL_PRODUCT)
+            for product in products:
+                if product.text not in product_names:
+                    product_names.append(product.text)
+                    product.click()
+                    product_page = ProductPage(self.driver)
+                    product_page.add_product_to_cart()
+                    WebDriverWait(self.driver, 10).until(
+                        ec.presence_of_element_located(ProductPageLocators.POPUP_DIALOG)
+                    )
+                    self.driver.back()
+                    break
+
 
 class SearchResultPage(MainPage):
 
@@ -48,7 +71,11 @@ class SearchResultPage(MainPage):
 class ProductPage(MainPage):
 
     # returns the name of the product
+    # TODO: create an exception/ if clause if the product is unavailable
     def add_product_to_cart(self) -> str:
+        # quantity = self.driver.find_element(*ProductPageLocators.QUANTITY)
+        # quantity.clear()
+        # quantity.send_keys(amount) # amount == param
         element = self.driver.find_element(*ProductPageLocators.ADD_TO_CART_BUTTON)
         product_name = self.driver.find_element(*ProductPageLocators.PRODUCT_NAME)
         element.click()

@@ -83,7 +83,7 @@ class TestCases(unittest.TestCase):
         create_account_page.send_form()  # goes back to home page
 
     def test_add_random_to_cart_by_name(self):
-        product_name = 'humming'
+        product_name = 'philips'
         self.add_random_to_cart_by_name(product_name)
         main_page = page.MainPage(self.driver)
         main_page.click_go_to_cart()
@@ -97,7 +97,7 @@ class TestCases(unittest.TestCase):
         # this loop is to add different products, if the same product is added this test could potentially fail on
         # its own
         while len(product_names) < 3:
-            product_name = self.add_random_to_cart_by_name('hummingbird')
+            product_name = self.add_random_to_cart_by_name('philips')
             if product_name not in product_names:
                 product_names.append(product_name)
 
@@ -162,6 +162,14 @@ class TestCases(unittest.TestCase):
         print(f'{random_order}_status: {order_status}')
         # there is nothing to check if all goes according to the test
         assert True
+
+    def test_add_products_from_categories(self):
+        main_page = page.MainPage(self.driver)
+        for i in range(1, 3):  # two categories
+            main_page.go_to_category(i)
+
+            category_page = page.CategoryPage(self.driver)
+            category_page.add_random_products_from_category()
 
     def tearDown(self) -> None:
         self.driver.close()  # this is unnecessary in Selenium 4
