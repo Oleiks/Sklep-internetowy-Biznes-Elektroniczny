@@ -14,6 +14,12 @@ class category:
         self.aTag = soup.find('a')
         self.link = f"{baseurl}{self.aTag['href']}"
         self.categoryName = self.aTag.text
+        try:
+            r = requests.get(self.link, headers=headers)
+            s = BeautifulSoup(r.content, 'lxml')
+            self.description = s.find('div', class_="site-fadeout-container").find('p').text
+        except:
+            self.description = self.categoryName
         self.parentName = parentName
         #Category number for creating image paths
         self.numberOfCategory = numberOfCategory
@@ -23,7 +29,8 @@ class category:
     def toDict(self):
         return {
             'Name': self.categoryName,
-            'Parent category': self.parentName
+            'Parent category': self.parentName,
+            'Description': self.description
         }
     
 class product:
@@ -31,7 +38,7 @@ class product:
         self.valid = True
         self.imgname = imgname
         self.categoryName = categoryName
-        self.name = soup.find('h1').text.replace('>', '')
+        self.name = soup.find('h1').text.replace('>', '')[:128]
         #Standard
         try:
             self.price = soup.find('span', class_='site-currency-attention').text
@@ -116,17 +123,14 @@ class scraper:
                 self.subCategories.append(category(subCat,cat.categoryName, self.numberOfCategories))
                 self.numberOfCategories += 1
 
-    def deleteEmptyCategories(self):
-        for cat in self.subCategories:
-            if cat.numberOfProducts == 0:
-                self.subCategories.remove(cat)
-
     def exportCategoriesToCsv(self):
         categories = []
         for cat in self.mainCategories:
             categories.append(cat.toDict())
         for cat in self.subCategories:
-            categories .append(cat.toDict())
+            #Deletion of empty categories
+            if cat.numberOfProducts > 0:
+                categories .append(cat.toDict())
         dataFrame = pd.DataFrame(categories)
         dataFrame.to_csv('../results/categories.csv', sep='>', encoding='utf-8')
 
@@ -138,10 +142,11 @@ class scraper:
             for prod in productLinks:
                 r = requests.get(f"{baseurl}{prod['href']}", headers=headers)
                 soup = BeautifulSoup(r.content, 'lxml')
-                cat.numberOfProducts += 1
-                p = product(soup, cat.categoryName, f"{cat.numberOfCategory}_{cat.numberOfProducts}")
+                p = product(soup, cat.categoryName, f"{cat.numberOfCategory}_{cat.numberOfProducts + 1}")
                 if p.valid:
                     self.products.append(p.toDict())
+                    cat.numberOfProducts += 1
+                
 
     def scrapeProducts(self):
         for cat in self.subCategories:
@@ -157,7 +162,6 @@ class scraper:
         self.scrapeMainCategories()
         self.scrapeSubCategories()
         self.scrapeProducts()
-        self.deleteEmptyCategories()
         self.exportCategoriesToCsv()
 
 s = scraper()
