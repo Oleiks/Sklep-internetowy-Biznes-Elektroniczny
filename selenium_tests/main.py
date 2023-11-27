@@ -7,6 +7,9 @@ import page
 
 
 class TestCases(unittest.TestCase):
+    driver_options = webdriver.ChromeOptions()
+    driver_options.add_argument("--headless=new")
+
     sing_up_data = {
         'sex': 'male',
         'name': 'name',
@@ -19,6 +22,7 @@ class TestCases(unittest.TestCase):
         'newsletter': True,
         'TOS': True
     }
+    # print('sing_up_data[]:', sing_up_data['email'])
 
     checkout_data = {
         'ALIAS': None,  # None here means optional
@@ -44,6 +48,7 @@ class TestCases(unittest.TestCase):
                 checkout_data[key] = getattr(faker, key.lower())() if hasattr(faker, key.lower()) else faker.word()
 
     def setUp(self) -> None:
+        # self.driver = webdriver.Chrome(options=self.driver_options)
         self.driver = webdriver.Chrome()
         self.driver.get('http://localhost:8080')
 
@@ -127,13 +132,19 @@ class TestCases(unittest.TestCase):
         # this is hardcoded, you need to create an account and insert the credentials here
         my_account_page.login('P182WB89Y1@test.com', self.sing_up_data['password'])
 
-        self.add_random_to_cart_by_name('humming')  # to be changed
+        # this test will fail if the product in unavailable, otherwise it seems to work fine
+        self.add_random_to_cart_by_name('zebra')  # to be changed
         main_page.click_go_to_cart()
         cart_page = page.CartPage(self.driver)
         cart_page.proceed_to_checkout()
 
         checkout_page = page.CheckoutPage(self.driver)
-        checkout_page.fill_in_checkout_info_and_submit(self.checkout_data)
+        try:
+            checkout_page.delete_address()
+        except RuntimeError:  # the exception needs to be caught?
+            pass
+        finally:
+            checkout_page.fill_in_checkout_info_and_submit(self.checkout_data)
 
         order_confirmation_page = page.OrderConfirmationPage(self.driver)
         order_id = order_confirmation_page.get_order_id()

@@ -25,7 +25,6 @@ class MainPage(BasePage):
 
     def click_log_in(self):
         element = self.driver.find_element(*MainPageLocators.USER_INFO)
-        element = element.find_element(By.TAG_NAME, 'a')  # looking for a link in user-info div
         element.click()
 
     def click_on_account(self):
@@ -141,6 +140,11 @@ class CartPage(MainPage):
 
 
 class CheckoutPage(BasePage):
+    def delete_address(self):
+        WebDriverWait(self.driver, 3).until(
+            ec.presence_of_element_located((By.CLASS_NAME, "delete-address.text-muted"))
+        ).click()
+
     # this will fail if there are any addresses previously created
     def fill_in_checkout_info_and_submit(self, info: dict):
         for val in info:
