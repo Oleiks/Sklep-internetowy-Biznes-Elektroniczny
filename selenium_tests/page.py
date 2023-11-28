@@ -2,7 +2,7 @@ import random
 import time
 
 from selenium import webdriver
-from selenium.webdriver import Keys
+from selenium.webdriver import Keys, ActionChains
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from locator import *
@@ -36,8 +36,16 @@ class MainPage(BasePage):
         return ' '.join([name, surname]) == element.text
 
     def go_to_category(self, category_num: int):
+        # This commented code below doesn't work anymore because the category links are now dropdown
+
         # category iterates itself by 3 for some reason
-        self.driver.find_element(By.ID, f'category-{category_num * 3}').click()
+        # self.driver.find_element(By.ID, f'category-{category_num * 3}').click()
+
+        a = ActionChains(self.driver)
+        element = self.driver.find_element(By.ID, 'top-menu')
+        a.move_to_element(element).perform()
+        element = self.driver.find_elements(By.CLASS_NAME, 'category')
+        element[category_num].click()
 
 
 class CategoryPage(MainPage):
@@ -172,9 +180,14 @@ class CheckoutPage(BasePage):
         element.click()
 
         # delivery option
+        self.driver.find_element(*CheckoutPageLocators.DELIVERY_OPTION).click()
         self.driver.find_element(*CheckoutPageLocators.CONFIRM_DELIVERY_BUTTON).click()
 
         # payment option
+        # This one doesn't generate the invoice
+        # WebDriverWait(self.driver, 10).until(
+        #     ec.presence_of_element_located(CheckoutPageLocators.PAYMENT_ON_DELIVERY)
+        # ).click()
         WebDriverWait(self.driver, 10).until(
             ec.presence_of_element_located(CheckoutPageLocators.PAYMENT_OPTION)
         ).click()

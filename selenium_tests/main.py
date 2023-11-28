@@ -13,6 +13,7 @@ import page
 class TestCases(unittest.TestCase):
     driver_options = webdriver.ChromeOptions()
     driver_options.add_argument("--headless=new")
+    driver_options.add_argument("--window-size=1200,1000")
 
     sing_up_data = {
         'sex': 'male',
@@ -52,13 +53,12 @@ class TestCases(unittest.TestCase):
                 checkout_data[key] = getattr(faker, key.lower())() if hasattr(faker, key.lower()) else faker.word()
 
     def setUp(self) -> None:
-        # self.driver = webdriver.Chrome(options=self.driver_options)
-        self.driver = webdriver.Chrome()
+        self.driver = webdriver.Chrome(options=self.driver_options)
+        # self.driver = webdriver.Chrome()
         self.driver.get('http://localhost:8080')
         element = self.driver.find_element(By.ID, 'details-button')
         element.click()
         self.driver.find_element(By.ID, 'proceed-link').click()
-
 
     def add_random_to_cart_by_name(self, product_name: str):
         main_page = page.MainPage(self.driver)
@@ -133,10 +133,9 @@ class TestCases(unittest.TestCase):
         # this test randomly crashes on the delivery part
         # this could be result of the delivery option not being selected by default for some products
         main_page = page.MainPage(self.driver)
-        # The test assumes that there will be an account created under 'P182WB89Y1@test.com',
-        # and no addresses were previously added
         main_page.click_log_in()
         my_account_page = page.MyAccountPage(self.driver)
+        # The test assumes that there will be an account created under 'P182WB89Y1@test.com'
         # this is hardcoded, you need to create an account and insert the credentials here
         my_account_page.login('6ZPMX2NGDI@test.com', self.sing_up_data['password'])
 
@@ -170,7 +169,7 @@ class TestCases(unittest.TestCase):
 
         my_account_page = page.MyAccountPage(self.driver)
         # this is hardcoded and needs to be changed
-        my_account_page.login('P182WB89Y1@test.com', self.sing_up_data['password'])
+        my_account_page.login('6ZPMX2NGDI@test.com', self.sing_up_data['password'])
         my_account_page.go_to_order_history()
 
         order_history_page = page.OrderHistoryPage(self.driver)
@@ -179,6 +178,28 @@ class TestCases(unittest.TestCase):
         order_status = order_history_page.get_order_status(random_order)
         print(f'{random_order}_status: {order_status}')
         # there is nothing to check if all goes according to the test
+        assert True
+
+    def test_get_invoice(self):
+        main_page = page.MainPage(self.driver)
+        main_page.click_log_in()
+
+        my_account_page = page.MyAccountPage(self.driver)
+        # this is hardcoded and needs to be changed every time there is a new fetch
+        my_account_page.login('6ZPMX2NGDI@test.com', self.sing_up_data['password'])
+        my_account_page.go_to_order_history()
+        table = self.driver.find_element(By.TAG_NAME, 'table')
+        a_tags = table.find_elements(By.TAG_NAME, 'a')
+
+        for a_tag in a_tags:
+            href = a_tag.get_attribute("href")
+            if href and 'pdf-invoice' in href:
+                a_tag.click()  # a tags for invoices are not visible if the width of the driver is too small
+                # check driver width-height self.driver_option
+                time.sleep(3)  # wait for the download
+                break
+
+        # there is nothing to check if all goes according to the test, pdf file should download
         assert True
 
     def test_add_products_from_categories(self):

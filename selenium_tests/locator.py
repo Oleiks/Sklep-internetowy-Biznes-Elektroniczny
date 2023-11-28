@@ -81,9 +81,11 @@ class CheckoutPageLocators(object):
     DELIVERY_OPTION_1 = (By.ID, "delivery_option_1")  # will have to inject int value later
     CONFIRM_DELIVERY_BUTTON = (By.NAME, "confirmDeliveryOption")
     PAYMENT_OPTION = (By.ID, "payment-option-1")  # will have to inject int value later
+    PAYMENT_ON_DELIVERY = (By.NAME, "ps_cashondelivery")
     TOS = (By.ID, "conditions_to_approve[terms-and-conditions]")
     SUBMIT_ORDER_AREA = (By.ID, "payment-confirmation")
     SUBMIT_ORDER_BUTTON = (By.CLASS_NAME, "btn.btn-primary.center-block")
+    DELIVERY_OPTION = (By.ID, "delivery_option_5")
 
 
 class OrderConfirmationLocators(MainPageLocators):
