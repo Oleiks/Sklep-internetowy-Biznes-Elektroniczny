@@ -1,8 +1,12 @@
 import random
-import unittest
 import string
+import time
+import unittest
+
 from faker import Faker
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+
 import page
 
 
@@ -22,7 +26,7 @@ class TestCases(unittest.TestCase):
         'newsletter': True,
         'TOS': True
     }
-    # print('sing_up_data[]:', sing_up_data['email'])
+    print('sing_up_data[]:', sing_up_data['email'])
 
     checkout_data = {
         'ALIAS': None,  # None here means optional
@@ -51,6 +55,10 @@ class TestCases(unittest.TestCase):
         # self.driver = webdriver.Chrome(options=self.driver_options)
         self.driver = webdriver.Chrome()
         self.driver.get('http://localhost:8080')
+        element = self.driver.find_element(By.ID, 'details-button')
+        element.click()
+        self.driver.find_element(By.ID, 'proceed-link').click()
+
 
     def add_random_to_cart_by_name(self, product_name: str):
         main_page = page.MainPage(self.driver)
@@ -130,7 +138,7 @@ class TestCases(unittest.TestCase):
         main_page.click_log_in()
         my_account_page = page.MyAccountPage(self.driver)
         # this is hardcoded, you need to create an account and insert the credentials here
-        my_account_page.login('P182WB89Y1@test.com', self.sing_up_data['password'])
+        my_account_page.login('6ZPMX2NGDI@test.com', self.sing_up_data['password'])
 
         # this test will fail if the product in unavailable, otherwise it seems to work fine
         self.add_random_to_cart_by_name('zebra')  # to be changed
