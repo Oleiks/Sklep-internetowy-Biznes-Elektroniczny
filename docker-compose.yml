@@ -11,6 +11,7 @@ services:
       - ./dbdata:/var/lib/mysql
     networks:
       - prestashop-net
+    restart: always
 
   prestashop:
     image: prestashop/prestashop:1.7.8
@@ -21,15 +22,20 @@ services:
       - DB_PASSWD=admin
       - DB_NAME=prestashop
       - PS_FOLDER_ADMIN=adminpanel
-      - PS_DEV_MODE=1
     volumes:
       - ./psdata:/var/www/html
+      - ./prestashop.crt:/etc/ssl/certs/prestashop.crt
+      - ./prestashop.key:/etc/ssl/private/prestashop.key
+      - ./prestashop-ssl.conf:/etc/apache2/sites-available/prestashop-ssl.conf
+    command: /bin/bash -c "a2enmod ssl && a2ensite prestashop-ssl && apache2-foreground"
     depends_on:
       - mariadb
     ports:
       - "8080:80"
+      - "443:443"
     networks:
       - prestashop-net
+    restart: always
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -45,7 +51,7 @@ services:
       - mariadb
     networks:
       - prestashop-net
-
+    restart: always
 networks:
   prestashop-net:
 volumes:
