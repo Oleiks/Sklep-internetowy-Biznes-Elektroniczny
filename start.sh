@@ -1,5 +1,5 @@
 #!/bin/bash
-chmod -R 755 .
+chmod -R 777 .
 docker-compose up -d
 sleep 10
 docker-compose down
