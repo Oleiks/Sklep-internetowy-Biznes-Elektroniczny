@@ -1,2 +1,3 @@
 # BiznesElektronicznyProjekt
-To start the shop run the start.sh file.
+
+The first time running the shop use start.sh file to start the shop. Remember to add permissions 
