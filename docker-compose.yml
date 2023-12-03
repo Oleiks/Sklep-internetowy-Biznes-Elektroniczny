@@ -9,6 +9,7 @@ services:
       MYSQL_DATABASE: prestashop
     volumes:
       - ./dbdata:/var/lib/mysql
+      - ./1701560096-58e85bfb.sql:/docker-entrypoint-initdb.d/backup.sql
     networks:
       - prestashop-net
     restart: always
