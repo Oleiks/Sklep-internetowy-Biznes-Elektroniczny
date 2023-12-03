@@ -25,6 +25,7 @@ class MainPage(BasePage):
 
     def click_log_in(self):
         element = self.driver.find_element(*MainPageLocators.USER_INFO)
+        element = element.find_element(By.TAG_NAME, 'a')
         element.click()
 
     def click_on_account(self):
@@ -172,7 +173,6 @@ class CheckoutPage(BasePage):
                     WebDriverWait(self.driver, 10).until(
                         ec.presence_of_element_located(locator)
                     ).click()
-
         element = WebDriverWait(self.driver, 10).until(
             ec.presence_of_element_located(CheckoutPageLocators.SUBMIT_DATA_AREA)
         )

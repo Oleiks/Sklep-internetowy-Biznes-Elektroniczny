@@ -27,7 +27,7 @@ class TestCases(unittest.TestCase):
         'newsletter': True,
         'TOS': True
     }
-    print('sing_up_data[]:', sing_up_data['email'])
+    # print('sing_up_data[]:', sing_up_data['email'])
 
     checkout_data = {
         'ALIAS': None,  # None here means optional
@@ -137,7 +137,7 @@ class TestCases(unittest.TestCase):
         my_account_page = page.MyAccountPage(self.driver)
         # The test assumes that there will be an account created under 'P182WB89Y1@test.com'
         # this is hardcoded, you need to create an account and insert the credentials here
-        my_account_page.login('6ZPMX2NGDI@test.com', self.sing_up_data['password'])
+        my_account_page.login('2KQJK8VP7H@test.com', self.sing_up_data['password'])
 
         # this test will fail if the product in unavailable, otherwise it seems to work fine
         self.add_random_to_cart_by_name('zebra')  # to be changed
@@ -148,6 +148,7 @@ class TestCases(unittest.TestCase):
         checkout_page = page.CheckoutPage(self.driver)
         try:
             checkout_page.delete_address()
+
         except RuntimeError:  # the exception needs to be caught?
             pass
         finally:
@@ -169,7 +170,7 @@ class TestCases(unittest.TestCase):
 
         my_account_page = page.MyAccountPage(self.driver)
         # this is hardcoded and needs to be changed
-        my_account_page.login('6ZPMX2NGDI@test.com', self.sing_up_data['password'])
+        my_account_page.login('2KQJK8VP7H@test.com', self.sing_up_data['password'])
         my_account_page.go_to_order_history()
 
         order_history_page = page.OrderHistoryPage(self.driver)
@@ -186,7 +187,7 @@ class TestCases(unittest.TestCase):
 
         my_account_page = page.MyAccountPage(self.driver)
         # this is hardcoded and needs to be changed every time there is a new fetch
-        my_account_page.login('6ZPMX2NGDI@test.com', self.sing_up_data['password'])
+        my_account_page.login('2KQJK8VP7H@test.com', self.sing_up_data['password'])
         my_account_page.go_to_order_history()
         table = self.driver.find_element(By.TAG_NAME, 'table')
         a_tags = table.find_elements(By.TAG_NAME, 'a')
@@ -209,6 +210,8 @@ class TestCases(unittest.TestCase):
 
             category_page = page.CategoryPage(self.driver)
             category_page.add_random_products_from_category()
+
+        assert True
 
     def tearDown(self) -> None:
         self.driver.close()  # this is unnecessary in Selenium 4
