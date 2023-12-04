@@ -138,7 +138,7 @@ class TestCases(unittest.TestCase):
     def test_sing_up(self):
         self.sing_up(self.sing_up_data)
         main_page = page.MainPage(self.driver)
-        # this will create a new account using random credentials, those are independent of the
+        # this will create a new account using random credentials, these are independent of the
         # PRE_GENERATED_CREDENTIALS
         self.assertTrue(main_page.is_name_surname_matching(self.sing_up_data['name'], self.sing_up_data['surname']))
 
@@ -202,7 +202,7 @@ class TestCases(unittest.TestCase):
         for a_tag in a_tags:
             href = a_tag.get_attribute("href")
             if href and 'pdf-invoice' in href:
-                a_tag.click()  # 'a' tags for invoices are not visible if the width of the driver is too small
+                a_tag.click()  # 'a' tags for invoices are not visible if the width of the driver client is too small
                 # check driver width-height self.driver_option
                 time.sleep(3)  # wait for the download
                 break

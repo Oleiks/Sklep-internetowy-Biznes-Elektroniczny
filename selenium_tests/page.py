@@ -37,11 +37,6 @@ class MainPage(BasePage):
         return ' '.join([name, surname]) == element.text
 
     def go_to_category(self, category_num: int):
-        # This commented code below doesn't work anymore because the category links are now dropdown
-
-        # category iterates itself by 3 for some reason
-        # self.driver.find_element(By.ID, f'category-{category_num * 3}').click()
-
         a = ActionChains(self.driver)
         element = self.driver.find_element(By.ID, 'top-menu')
         a.move_to_element(element).perform()
@@ -84,20 +79,7 @@ class SearchResultPage(MainPage):
 
 
 class ProductPage(MainPage):
-
-    # returns the name of the product
-    # TODO: create an exception/ if clause if the product is unavailable
-    # def add_product_to_cart(self) -> str:
-    #     # quantity = self.driver.find_element(*ProductPageLocators.QUANTITY)
-    #     # quantity.clear()
-    #     # quantity.send_keys(amount) # amount == param
-    #     element = self.driver.find_element(*ProductPageLocators.ADD_TO_CART_BUTTON)
-    #     product_name = self.driver.find_element(*ProductPageLocators.PRODUCT_NAME)
-    #     element.click()
-    #     return product_name.text
     def add_product_to_cart(self, amount: int = 1) -> str:
-        # Check if the product is available by looking for a specific element
-        # Assuming the availability indicator is present, proceed to add to cart
         add = self.driver.find_element(
             By.CSS_SELECTOR,
             "#add-to-cart-or-refresh > div.product-add-to-cart.js-product-add-to-cart > div > div.qty "
@@ -127,14 +109,13 @@ class CartPage(MainPage):
         element = element.find_element(*CartPageLocators.TOP_PRODUCT_NAME)
 
         return all(word in element.text.upper().split() for word in name.upper().split())
-        # return name.upper() in element.text.upper()
 
     def delete_from_cart(self, deletions: int = 1) -> None:
         for _ in range(deletions):
             WebDriverWait(self.driver, 10).until(
                 ec.element_to_be_clickable(CartPageLocators.DELETE_BUTTON)
             ).click()
-            time.sleep(1)  # otherwise the loop doesn't continue
+            time.sleep(1)  # otherwise the loop won't continue
 
     def cart_item_number(self) -> int:
         element = self.driver.find_elements(*CartPageLocators.DELETE_BUTTON)
@@ -153,13 +134,11 @@ class CheckoutPage(BasePage):
             ec.presence_of_element_located((By.CLASS_NAME, "delete-address.text-muted"))
         ).click()
 
-    # this will fail if there are any addresses previously created
     def fill_in_checkout_info_and_submit(self, info: dict):
         for val in info:
             # text data
             if info[val] is not None and info[val] not in (True, False):
                 locator = getattr(CheckoutPageLocators, f'{val}'.upper())
-                # element = self.driver.find_element(*locator)
                 element = WebDriverWait(self.driver, 10).until(
                     ec.presence_of_element_located(locator)
                 )
@@ -182,11 +161,6 @@ class CheckoutPage(BasePage):
         self.driver.find_element(*CheckoutPageLocators.DELIVERY_OPTION).click()
         self.driver.find_element(*CheckoutPageLocators.CONFIRM_DELIVERY_BUTTON).click()
 
-        # payment option
-        # This one doesn't generate the invoice
-        # WebDriverWait(self.driver, 10).until(
-        #     ec.presence_of_element_located(CheckoutPageLocators.PAYMENT_ON_DELIVERY)
-        # ).click()
         WebDriverWait(self.driver, 10).until(
             ec.presence_of_element_located(CheckoutPageLocators.PAYMENT_OPTION)
         ).click()
