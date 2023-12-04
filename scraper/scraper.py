@@ -119,9 +119,11 @@ class scraper:
             r = requests.get(cat.link, headers=headers)
             soup = BeautifulSoup(r.content, 'lxml')
             subCategories = soup.find_all('li', class_='d-flex')
-            for subCat in subCategories[:30]:
-                self.subCategories.append(category(subCat,cat.categoryName, self.numberOfCategories))
-                self.numberOfCategories += 1
+            for subCat in subCategories[:40]:
+                nazwa = subCat.find('a').text
+                if nazwa not in ['Akcesoria do czyszczenia','Grill i akcesoria grillowe', 'Mycie okien - akcesoria']:
+                    self.subCategories.append(category(subCat,cat.categoryName, self.numberOfCategories))
+                    self.numberOfCategories += 1
 
     def exportCategoriesToCsv(self):
         categories = []
