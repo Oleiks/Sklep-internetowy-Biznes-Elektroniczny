@@ -12,8 +12,8 @@ import page
 
 # TODO: insert the pre generated account info here, otherwise majority of the tests won't pass
 PRE_GENERATED_CREDENTIALS = {
-    'email': 'super_jestes@test.com',
-    'password': 'password123'
+    'email': 'your_email',
+    'password': 'your_password'
 }
 
 
