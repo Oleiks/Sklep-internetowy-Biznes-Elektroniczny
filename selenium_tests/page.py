@@ -52,29 +52,27 @@ class MainPage(BasePage):
 class CategoryPage(MainPage):
     def add_random_products_from_category(self):
         product_names = []
+        added_products = []
 
-        while len(product_names) < 10:  # this won't work if there is a product that is unavailable
+        while len(added_products) < 10:  # this won't work if there is a product that is unavailable
             products = self.driver.find_element(*CategoryProductsLocators.PRODUCT_AREA)
             products = products.find_elements(*CategoryProductsLocators.INDIVIDUAL_PRODUCT)
             for product in products:
                 product = product.find_element(*CategoryProductsLocators.PRODUCT_NAME)
                 if product.text not in product_names:
                     product_names.append(product.text)
+                    potential_add = product.text
                     product = product.find_element(*CategoryProductsLocators.PRODUCT_NAME_LINK)
                     product.click()
                     product_page = ProductPage(self.driver)
-
-                    product_page.add_product_to_cart(random.randint(1, 4))
-                    # Code bellow doesn't work because if there isn't sufficient number of items,
-                    # the popup dialog never shows up
-
-                    # WebDriverWait(self.driver, 10).until(
-                    #     ec.presence_of_element_located(ProductPageLocators.POPUP_DIALOG)
-                    # )
-
-                    # There needs to be some time before the product gets added to cart, this works for now
-                    time.sleep(0.5)
-                    self.driver.back()
+                    try:
+                        product_page.add_product_to_cart(random.randint(1, 4))
+                        time.sleep(0.5)
+                        added_products.append(potential_add)
+                    except RuntimeError:
+                        pass
+                    finally:
+                        self.driver.back()
                     break
 
 
@@ -110,13 +108,13 @@ class ProductPage(MainPage):
         for _ in range(amount - 1):
             add.click()
 
-        element = self.driver.find_element(*ProductPageLocators.ADD_TO_CART_BUTTON)
         product_name = self.driver.find_element(*ProductPageLocators.PRODUCT_NAME)
+        element = self.driver.find_element(*ProductPageLocators.ADD_TO_CART_BUTTON)
         element.click()
         return product_name.text
 
     def go_to_cart_popup_dialog(self):
-        element = WebDriverWait(self.driver, 10).until(
+        element = WebDriverWait(self.driver, 3).until(
             ec.presence_of_element_located(ProductPageLocators.POPUP_DIALOG)
         )
         element = element.find_element(*ProductPageLocators.POPUP_DIALOG_CART_BUTTON)
@@ -128,7 +126,8 @@ class CartPage(MainPage):
         element = self.driver.find_element(*CartPageLocators.CART_OVERVIEW)
         element = element.find_element(*CartPageLocators.TOP_PRODUCT_NAME)
 
-        return name.upper() in element.text.upper()
+        return all(word in element.text.upper().split() for word in name.upper().split())
+        # return name.upper() in element.text.upper()
 
     def delete_from_cart(self, deletions: int = 1) -> None:
         for _ in range(deletions):
@@ -150,7 +149,7 @@ class CartPage(MainPage):
 
 class CheckoutPage(BasePage):
     def delete_address(self):
-        WebDriverWait(self.driver, 3).until(
+        WebDriverWait(self.driver, 5).until(
             ec.presence_of_element_located((By.CLASS_NAME, "delete-address.text-muted"))
         ).click()
 
