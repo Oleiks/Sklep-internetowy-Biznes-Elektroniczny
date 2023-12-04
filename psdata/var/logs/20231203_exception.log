@@ -1,0 +1,36 @@
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:40:45: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:40:45: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:40:53: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:40:53: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:40:53: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:40:53: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:40:53: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:40:53: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:41:54: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:41:54: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:41:54: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:41:54: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:41:59: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:41:59: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:42:11: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:42:11: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:47:46: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:47:46: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:47:48: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:47:48: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:47:52: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:47:52: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:51:30: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:51:30: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:53:55: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:53:57: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:56:06: Shop not found at line 422 in file classes/shop/Shop.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:56:06: Shop not found at line 422 in file classes/shop/Shop.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:56:25: Shop not found at line 422 in file classes/shop/Shop.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:56:25: Shop not found at line 422 in file classes/shop/Shop.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:56:50: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:56:50: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:57:59: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:58:00: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:58:38: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
+*ERROR* 	v1.7.8.10	2023/12/03 - 00:58:38: Link to database cannot be established: SQLSTATE[HY000] [2002] Connection refused at line 137 in file classes/db/DbPDO.php
