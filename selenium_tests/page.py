@@ -25,6 +25,7 @@ class MainPage(BasePage):
 
     def click_log_in(self):
         element = self.driver.find_element(*MainPageLocators.USER_INFO)
+        element = element.find_element(By.TAG_NAME, 'a')
         element.click()
 
     def click_on_account(self):
@@ -36,11 +37,6 @@ class MainPage(BasePage):
         return ' '.join([name, surname]) == element.text
 
     def go_to_category(self, category_num: int):
-        # This commented code below doesn't work anymore because the category links are now dropdown
-
-        # category iterates itself by 3 for some reason
-        # self.driver.find_element(By.ID, f'category-{category_num * 3}').click()
-
         a = ActionChains(self.driver)
         element = self.driver.find_element(By.ID, 'top-menu')
         a.move_to_element(element).perform()
@@ -51,29 +47,27 @@ class MainPage(BasePage):
 class CategoryPage(MainPage):
     def add_random_products_from_category(self):
         product_names = []
+        added_products = []
 
-        while len(product_names) < 10:  # this won't work if there is a product that is unavailable
+        while len(added_products) < 10:  # this won't work if there is a product that is unavailable
             products = self.driver.find_element(*CategoryProductsLocators.PRODUCT_AREA)
             products = products.find_elements(*CategoryProductsLocators.INDIVIDUAL_PRODUCT)
             for product in products:
                 product = product.find_element(*CategoryProductsLocators.PRODUCT_NAME)
                 if product.text not in product_names:
                     product_names.append(product.text)
+                    potential_add = product.text
                     product = product.find_element(*CategoryProductsLocators.PRODUCT_NAME_LINK)
                     product.click()
                     product_page = ProductPage(self.driver)
-
-                    product_page.add_product_to_cart(random.randint(1, 4))
-                    # Code bellow doesn't work because if there isn't sufficient number of items,
-                    # the popup dialog never shows up
-
-                    # WebDriverWait(self.driver, 10).until(
-                    #     ec.presence_of_element_located(ProductPageLocators.POPUP_DIALOG)
-                    # )
-
-                    # There needs to be some time before the product gets added to cart, this works for now
-                    time.sleep(0.5)
-                    self.driver.back()
+                    try:
+                        product_page.add_product_to_cart(random.randint(1, 4))
+                        time.sleep(0.5)
+                        added_products.append(potential_add)
+                    except RuntimeError:
+                        pass
+                    finally:
+                        self.driver.back()
                     break
 
 
@@ -85,20 +79,7 @@ class SearchResultPage(MainPage):
 
 
 class ProductPage(MainPage):
-
-    # returns the name of the product
-    # TODO: create an exception/ if clause if the product is unavailable
-    # def add_product_to_cart(self) -> str:
-    #     # quantity = self.driver.find_element(*ProductPageLocators.QUANTITY)
-    #     # quantity.clear()
-    #     # quantity.send_keys(amount) # amount == param
-    #     element = self.driver.find_element(*ProductPageLocators.ADD_TO_CART_BUTTON)
-    #     product_name = self.driver.find_element(*ProductPageLocators.PRODUCT_NAME)
-    #     element.click()
-    #     return product_name.text
     def add_product_to_cart(self, amount: int = 1) -> str:
-        # Check if the product is available by looking for a specific element
-        # Assuming the availability indicator is present, proceed to add to cart
         add = self.driver.find_element(
             By.CSS_SELECTOR,
             "#add-to-cart-or-refresh > div.product-add-to-cart.js-product-add-to-cart > div > div.qty "
@@ -109,13 +90,13 @@ class ProductPage(MainPage):
         for _ in range(amount - 1):
             add.click()
 
-        element = self.driver.find_element(*ProductPageLocators.ADD_TO_CART_BUTTON)
         product_name = self.driver.find_element(*ProductPageLocators.PRODUCT_NAME)
+        element = self.driver.find_element(*ProductPageLocators.ADD_TO_CART_BUTTON)
         element.click()
         return product_name.text
 
     def go_to_cart_popup_dialog(self):
-        element = WebDriverWait(self.driver, 10).until(
+        element = WebDriverWait(self.driver, 3).until(
             ec.presence_of_element_located(ProductPageLocators.POPUP_DIALOG)
         )
         element = element.find_element(*ProductPageLocators.POPUP_DIALOG_CART_BUTTON)
@@ -127,14 +108,14 @@ class CartPage(MainPage):
         element = self.driver.find_element(*CartPageLocators.CART_OVERVIEW)
         element = element.find_element(*CartPageLocators.TOP_PRODUCT_NAME)
 
-        return name.upper() in element.text.upper()
+        return all(word in element.text.upper().split() for word in name.upper().split())
 
     def delete_from_cart(self, deletions: int = 1) -> None:
         for _ in range(deletions):
             WebDriverWait(self.driver, 10).until(
                 ec.element_to_be_clickable(CartPageLocators.DELETE_BUTTON)
             ).click()
-            time.sleep(1)  # otherwise the loop doesn't continue
+            time.sleep(1)  # otherwise the loop won't continue
 
     def cart_item_number(self) -> int:
         element = self.driver.find_elements(*CartPageLocators.DELETE_BUTTON)
@@ -149,17 +130,15 @@ class CartPage(MainPage):
 
 class CheckoutPage(BasePage):
     def delete_address(self):
-        WebDriverWait(self.driver, 3).until(
+        WebDriverWait(self.driver, 5).until(
             ec.presence_of_element_located((By.CLASS_NAME, "delete-address.text-muted"))
         ).click()
 
-    # this will fail if there are any addresses previously created
     def fill_in_checkout_info_and_submit(self, info: dict):
         for val in info:
             # text data
             if info[val] is not None and info[val] not in (True, False):
                 locator = getattr(CheckoutPageLocators, f'{val}'.upper())
-                # element = self.driver.find_element(*locator)
                 element = WebDriverWait(self.driver, 10).until(
                     ec.presence_of_element_located(locator)
                 )
@@ -172,7 +151,6 @@ class CheckoutPage(BasePage):
                     WebDriverWait(self.driver, 10).until(
                         ec.presence_of_element_located(locator)
                     ).click()
-
         element = WebDriverWait(self.driver, 10).until(
             ec.presence_of_element_located(CheckoutPageLocators.SUBMIT_DATA_AREA)
         )
@@ -183,11 +161,6 @@ class CheckoutPage(BasePage):
         self.driver.find_element(*CheckoutPageLocators.DELIVERY_OPTION).click()
         self.driver.find_element(*CheckoutPageLocators.CONFIRM_DELIVERY_BUTTON).click()
 
-        # payment option
-        # This one doesn't generate the invoice
-        # WebDriverWait(self.driver, 10).until(
-        #     ec.presence_of_element_located(CheckoutPageLocators.PAYMENT_ON_DELIVERY)
-        # ).click()
         WebDriverWait(self.driver, 10).until(
             ec.presence_of_element_located(CheckoutPageLocators.PAYMENT_OPTION)
         ).click()

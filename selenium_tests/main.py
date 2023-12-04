@@ -5,16 +5,25 @@ import unittest
 
 from faker import Faker
 from selenium import webdriver
+from selenium.common import TimeoutException
 from selenium.webdriver.common.by import By
 
 import page
 
+# TODO: insert the pre generated account info here, otherwise majority of the tests won't pass
+PRE_GENERATED_CREDENTIALS = {
+    'email': 'your_email',
+    'password': 'your_password'
+}
+
 
 class TestCases(unittest.TestCase):
     driver_options = webdriver.ChromeOptions()
-    driver_options.add_argument("--headless=new")
-    driver_options.add_argument("--window-size=1200,1000")
+    # driver_options.add_argument("--headless=new")  # this can be toggled on or off, it hides the browser client
+    driver_options.add_argument("--window-size=1200,1000")  # this needs to be set in order for the elements to
+    # display on the page
 
+    # data generation
     sing_up_data = {
         'sex': 'male',
         'name': 'name',
@@ -27,7 +36,6 @@ class TestCases(unittest.TestCase):
         'newsletter': True,
         'TOS': True
     }
-    print('sing_up_data[]:', sing_up_data['email'])
 
     checkout_data = {
         'ALIAS': None,  # None here means optional
@@ -52,26 +60,30 @@ class TestCases(unittest.TestCase):
             else:
                 checkout_data[key] = getattr(faker, key.lower())() if hasattr(faker, key.lower()) else faker.word()
 
+    # helper functions
     def setUp(self) -> None:
         self.driver = webdriver.Chrome(options=self.driver_options)
-        # self.driver = webdriver.Chrome()
         self.driver.get('http://localhost:8080')
         element = self.driver.find_element(By.ID, 'details-button')
         element.click()
         self.driver.find_element(By.ID, 'proceed-link').click()
 
+    # this loop is infinite if there are no available products of given name
     def add_random_to_cart_by_name(self, product_name: str):
         main_page = page.MainPage(self.driver)
         main_page.input_search_box(product_name)
 
         result_page = page.SearchResultPage(self.driver)
-        result_page.click_on_random_product()
-
-        product_page = page.ProductPage(self.driver)
-        product_name = product_page.add_product_to_cart()
-        product_page.go_to_cart_popup_dialog()
-        self.driver.get('http://localhost:8080')  # goes back to home page
-        return product_name
+        while True:
+            try:
+                result_page.click_on_random_product()
+                product_page = page.ProductPage(self.driver)
+                product_name = product_page.add_product_to_cart()
+                product_page.go_to_cart_popup_dialog()
+                self.driver.get('http://localhost:8080')  # goes back to home page
+                return product_name
+            except TimeoutException:
+                self.driver.back()
 
     def sing_up(self, sing_up_data: dict):
         self.driver.get('http://localhost:8080')
@@ -95,8 +107,9 @@ class TestCases(unittest.TestCase):
         create_account_page.check_opt_ins(checkbox_values)
         create_account_page.send_form()  # goes back to home page
 
+    # Actual tests
     def test_add_random_to_cart_by_name(self):
-        product_name = 'philips'
+        product_name = 'TEFAL'
         self.add_random_to_cart_by_name(product_name)
         main_page = page.MainPage(self.driver)
         main_page.click_go_to_cart()
@@ -107,8 +120,6 @@ class TestCases(unittest.TestCase):
 
     def test_delete_from_cart(self, deletions: int = 3):
         product_names = []
-        # this loop is to add different products, if the same product is added this test could potentially fail on
-        # its own
         while len(product_names) < 3:
             product_name = self.add_random_to_cart_by_name('philips')
             if product_name not in product_names:
@@ -127,20 +138,19 @@ class TestCases(unittest.TestCase):
     def test_sing_up(self):
         self.sing_up(self.sing_up_data)
         main_page = page.MainPage(self.driver)
+        # this will create a new account using random credentials, these are independent of the
+        # PRE_GENERATED_CREDENTIALS
         self.assertTrue(main_page.is_name_surname_matching(self.sing_up_data['name'], self.sing_up_data['surname']))
 
     def test_submit_order(self):
-        # this test randomly crashes on the delivery part
-        # this could be result of the delivery option not being selected by default for some products
         main_page = page.MainPage(self.driver)
         main_page.click_log_in()
         my_account_page = page.MyAccountPage(self.driver)
-        # The test assumes that there will be an account created under 'P182WB89Y1@test.com'
-        # this is hardcoded, you need to create an account and insert the credentials here
-        my_account_page.login('6ZPMX2NGDI@test.com', self.sing_up_data['password'])
+        # The test assumes that there will be an account created under 'PRE_GENERATED_CREDENTIALS['email']', see TODO
+        # above
+        my_account_page.login(PRE_GENERATED_CREDENTIALS['email'], PRE_GENERATED_CREDENTIALS['password'])
 
-        # this test will fail if the product in unavailable, otherwise it seems to work fine
-        self.add_random_to_cart_by_name('zebra')  # to be changed
+        self.add_random_to_cart_by_name('zebra')
         main_page.click_go_to_cart()
         cart_page = page.CartPage(self.driver)
         cart_page.proceed_to_checkout()
@@ -148,7 +158,7 @@ class TestCases(unittest.TestCase):
         checkout_page = page.CheckoutPage(self.driver)
         try:
             checkout_page.delete_address()
-        except RuntimeError:  # the exception needs to be caught?
+        except TimeoutError:  # the exception needs to be caught?
             pass
         finally:
             checkout_page.fill_in_checkout_info_and_submit(self.checkout_data)
@@ -168,8 +178,7 @@ class TestCases(unittest.TestCase):
         main_page.click_log_in()
 
         my_account_page = page.MyAccountPage(self.driver)
-        # this is hardcoded and needs to be changed
-        my_account_page.login('6ZPMX2NGDI@test.com', self.sing_up_data['password'])
+        my_account_page.login(PRE_GENERATED_CREDENTIALS['email'], PRE_GENERATED_CREDENTIALS['password'])
         my_account_page.go_to_order_history()
 
         order_history_page = page.OrderHistoryPage(self.driver)
@@ -185,8 +194,7 @@ class TestCases(unittest.TestCase):
         main_page.click_log_in()
 
         my_account_page = page.MyAccountPage(self.driver)
-        # this is hardcoded and needs to be changed every time there is a new fetch
-        my_account_page.login('6ZPMX2NGDI@test.com', self.sing_up_data['password'])
+        my_account_page.login(PRE_GENERATED_CREDENTIALS['email'], PRE_GENERATED_CREDENTIALS['password'])
         my_account_page.go_to_order_history()
         table = self.driver.find_element(By.TAG_NAME, 'table')
         a_tags = table.find_elements(By.TAG_NAME, 'a')
@@ -194,7 +202,7 @@ class TestCases(unittest.TestCase):
         for a_tag in a_tags:
             href = a_tag.get_attribute("href")
             if href and 'pdf-invoice' in href:
-                a_tag.click()  # a tags for invoices are not visible if the width of the driver is too small
+                a_tag.click()  # 'a' tags for invoices are not visible if the width of the driver client is too small
                 # check driver width-height self.driver_option
                 time.sleep(3)  # wait for the download
                 break
@@ -209,6 +217,8 @@ class TestCases(unittest.TestCase):
 
             category_page = page.CategoryPage(self.driver)
             category_page.add_random_products_from_category()
+
+        assert True
 
     def tearDown(self) -> None:
         self.driver.close()  # this is unnecessary in Selenium 4
