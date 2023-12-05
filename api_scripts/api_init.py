@@ -90,34 +90,30 @@ def addProducts(prestashop):
         product.find('show_price').text = '1'
         product.find('link_rewrite').find('language').text = re.sub(r"[^a-zA-Z0-9]+", "-",prod['Name']).lower()
         product.find('meta_title').find('language').text = prod['Name']
+        product.find('width').text = str(prod['Width'])
+        product.find('height').text = str(prod['Height'])
+        product.find('depth').text = str(prod['Depth'])
+        product.find('weight').text = str(prod['Weight'])
         id = prestashop.add('products', ElementTree.tostring(ptree)).find('product').find('id').text
         setCategories(prestashop, id, prod['Categories'])
         setQuantity(prestashop, id, prod['Quantity'])
         addProductImages(prestashop,id,prod['Image URLs'])
 
 def deleteAllProducts(prestashop):
-    products = prestashop.get('products').find('products')
-    pids = []
-    prods = products.findall('product')
-    for p in prods:
-        pids.append(p.attrib['id'])
-    try:
-        prestashop.delete('products',pids[:len(pids)//2])
-        prestashop.delete('products',pids[len(pids)//2:])
-    except Exception as e:
-        print(f"Błąd usuwania produktów: {e}")
+    products = prestashop.get('products').find('products').findall('product')
+    for p in products:
+        prestashop.delete('products',resource_ids=p.attrib['id'])
 
 def deleteAllCategories(prestashop):
-    categories = prestashop.get('categories').find('categories')
+    categories = prestashop.get('categories').find('categories').findall('category')
     cids = []
-    cats = categories.findall('category')
-    for c in cats:
+    for c in categories:
         if int(c.attrib['id'])>2:
             cids.append(c.attrib['id'])
     try:
         prestashop.delete('categories',cids)
     except Exception as e:
-        print(f"Błąd usuwania kategorii: {e}")
+        print(f"Błąd usuwania: {e}")
 
 deleteAllCategories(prestashop)
 deleteAllProducts(prestashop)
