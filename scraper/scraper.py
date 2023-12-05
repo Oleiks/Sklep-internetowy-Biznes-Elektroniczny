@@ -80,12 +80,34 @@ class product:
             if len(urls)>1:
                 break
         self.images = ';'.join(urls)
+
+        features = {'Szerokość':0.0,'Waga': 0.0, 'Wysokość':0.0, 'Głębokość':0.0}
+        specifications = soup.find('div', id='specItemsAccordion')
+        if specifications is not None:
+            divs = specifications.find_all('div',class_='')
+            for t in divs:
+                try:
+                    if t.find('div',class_='specItemTitle').text in ['Szerokość','Waga','Wysokość','Głębokość']:
+                        features[t.find('div',class_='specItemTitle').text] = t.find('div',class_='specItemValue').text
+                except:
+                    pass
+            for key, value in features.items():
+                if isinstance(value,str):
+                    try:
+                        quantity, unit = value.split()
+                        new_value = self.convertMetrics(quantity, unit)
+                        features[key] = new_value
+                    except:
+                        features[key] = 0.0
+        
+        self.width = features['Szerokość']
+        self.height = features['Wysokość']
+        self.depth = features['Głębokość']
+        self.weight = features['Waga']
         #No images
         if len(urls)==0:
             self.valid = False
 
-
-    
     def toDict(self):
         return {
             'Name': self.name,
@@ -95,9 +117,26 @@ class product:
             'Description': self.description,
             'Image URLs': self.images,
             'Quantity': self.quantity,
-            'Available for order': self.availableForOrder
-
+            'Available for order': self.availableForOrder,
+            'Width': self.width,
+            'Height': self.weight,
+            'Depth': self.depth,
+            'Weight': self.weight
         }
+    
+    def convertMetrics(self, value, unit):
+        units = {
+            'mm': 0.01,
+            'cm': 1.,
+            'm': 100.0,
+            'km': 1000.0,
+            'g': 0.001,
+            'kg': 1.0
+        }
+        if unit in units:
+            return round(float(value) * units[unit],3)
+        else:
+            return 0.0
     
 class scraper:
     def __init__(self) -> None:
