@@ -37,11 +37,9 @@ class MainPage(BasePage):
         return ' '.join([name, surname]) == element.text
 
     def go_to_category(self, category_num: int):
-        a = ActionChains(self.driver)
-        element = self.driver.find_element(By.ID, 'top-menu')
-        a.move_to_element(element).perform()
-        element = self.driver.find_elements(By.CLASS_NAME, 'category')
-        element[category_num].click()
+        element = self.driver.find_element(By.XPATH, f'//li[@id=\'category-{3 + category_num}\']//a[@class=\'dropdown'
+                                                     f'-item\']')
+        element.click()
 
 
 class CategoryPage(MainPage):

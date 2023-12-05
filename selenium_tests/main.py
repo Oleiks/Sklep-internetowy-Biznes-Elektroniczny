@@ -79,7 +79,8 @@ class TestCases(unittest.TestCase):
                 result_page.click_on_random_product()
                 product_page = page.ProductPage(self.driver)
                 product_name = product_page.add_product_to_cart()
-                product_page.go_to_cart_popup_dialog()
+                time.sleep(1)  # the product is added after some time after clicking 'add to cart'
+                # product_page.go_to_cart_popup_dialog() this line caused a crash on some machines
                 self.driver.get('http://localhost:8080')  # goes back to home page
                 return product_name
             except TimeoutException:
@@ -158,7 +159,7 @@ class TestCases(unittest.TestCase):
         checkout_page = page.CheckoutPage(self.driver)
         try:
             checkout_page.delete_address()
-        except TimeoutError:  # the exception needs to be caught?
+        except TimeoutException:  # the exception needs to be caught?
             pass
         finally:
             checkout_page.fill_in_checkout_info_and_submit(self.checkout_data)
@@ -212,7 +213,7 @@ class TestCases(unittest.TestCase):
 
     def test_add_products_from_categories(self):
         main_page = page.MainPage(self.driver)
-        for i in range(1, 3):  # two categories
+        for i in range(2):  # two categories
             main_page.go_to_category(i)
 
             category_page = page.CategoryPage(self.driver)
