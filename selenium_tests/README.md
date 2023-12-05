@@ -3,12 +3,16 @@
 This project contains automated tests for a prestashop application. In order to run the tests successfully, you need to provide pre-made account information in the `main.py` file. Follow the instructions below to set up the required credentials:
 
 ## Setup Instructions
+1. Install chrome-driver, preferably version 119.0.6045.105.
 
-1. Open the `main.py` file in your preferred text editor.
+2. Install packages from requirements.txt
 
-2. Locate `PRE_GENERATED_CREDENTIALS`.
+3. Open the `main.py` file in your preferred text editor.
 
-3. Input the pre-made account information into the specified variables.
+4. Locate `PRE_GENERATED_CREDENTIALS`.
+
+5. Input the pre-made account information into the specified variables.
+
 
 ```python
 # main.py
