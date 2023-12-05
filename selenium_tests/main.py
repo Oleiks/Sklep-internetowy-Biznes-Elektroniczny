@@ -212,7 +212,7 @@ class TestCases(unittest.TestCase):
 
     def test_add_products_from_categories(self):
         main_page = page.MainPage(self.driver)
-        for i in range(1, 3):  # two categories
+        for i in range(2):  # two categories
             main_page.go_to_category(i)
 
             category_page = page.CategoryPage(self.driver)
