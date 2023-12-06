@@ -89,7 +89,9 @@ class ProductPage(MainPage):
             add.click()
 
         product_name = self.driver.find_element(*ProductPageLocators.PRODUCT_NAME)
-        element = self.driver.find_element(*ProductPageLocators.ADD_TO_CART_BUTTON)
+        element = WebDriverWait(self.driver, 3).until(
+            ec.element_to_be_clickable(ProductPageLocators.ADD_TO_CART_BUTTON)
+        )
         element.click()
         return product_name.text
 

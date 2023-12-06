@@ -110,12 +110,13 @@ class TestCases(unittest.TestCase):
 
     # Actual tests
     def test_add_random_to_cart_by_name(self):
-        product_name = 'TEFAL'
+        product_name = 'Philips'
         self.add_random_to_cart_by_name(product_name)
         main_page = page.MainPage(self.driver)
         main_page.click_go_to_cart()
 
         cart_page = page.CartPage(self.driver)
+        # this test will fail if the product_name is not entirely in the added item name, or it's combination
         self.assertTrue(cart_page.is_product_name_matching(product_name),
                         'There is no product of given name in the cart.')
 
