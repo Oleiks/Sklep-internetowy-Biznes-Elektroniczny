@@ -2,7 +2,8 @@ import random
 import time
 
 from selenium import webdriver
-from selenium.webdriver import Keys, ActionChains
+from selenium.common import TimeoutException
+from selenium.webdriver import Keys
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from locator import *
@@ -37,18 +38,21 @@ class MainPage(BasePage):
         return ' '.join([name, surname]) == element.text
 
     def go_to_category(self, category_num: int):
-        element = self.driver.find_element(By.XPATH, f'//li[@id=\'category-{3 + category_num}\']//a[@class=\'dropdown'
-                                                     f'-item\']')
+        element = self.driver.find_element(By.XPATH, f'//li[@id=\'category-{28 + category_num}\']//a[@class=\'dropdown'
+                                                     f'-item\']')  # categories indexes start with '3'
         element.click()
 
 
 class CategoryPage(MainPage):
-    def add_random_products_from_category(self):
+    def add_random_products_from_category(self, category_url: str):
         product_names = []
         added_products = []
 
-        while len(added_products) < 10:  # this won't work if there is a product that is unavailable
-            products = self.driver.find_element(*CategoryProductsLocators.PRODUCT_AREA)
+        while len(added_products) < 5:  # will cause an infinite loop if more than 7 products are unavailable on the
+            # page
+            products = WebDriverWait(self.driver, 4).until(
+                ec.presence_of_element_located(CategoryProductsLocators.PRODUCT_AREA)
+            )
             products = products.find_elements(*CategoryProductsLocators.INDIVIDUAL_PRODUCT)
             for product in products:
                 product = product.find_element(*CategoryProductsLocators.PRODUCT_NAME)
@@ -62,10 +66,10 @@ class CategoryPage(MainPage):
                         product_page.add_product_to_cart(random.randint(1, 4))
                         time.sleep(0.5)
                         added_products.append(potential_add)
-                    except RuntimeError:
+                    except (TimeoutException, RuntimeError):
                         pass
                     finally:
-                        self.driver.back()
+                        self.driver.get(category_url)
                     break
 
 

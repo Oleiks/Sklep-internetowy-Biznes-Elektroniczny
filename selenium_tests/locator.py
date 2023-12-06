@@ -14,7 +14,7 @@ class SearchPageLocators(MainPageLocators):
 
 
 class ProductPageLocators(MainPageLocators):
-    ADD_TO_CART_BUTTON = (By.CLASS_NAME, "btn-primary.add-to-cart")  # "." instead of " " is needed
+    ADD_TO_CART_BUTTON = (By.CLASS_NAME, "btn.btn-primary.add-to-cart")  # "." instead of " " is needed
     POPUP_DIALOG = (By.CLASS_NAME, "cart-content")
     POPUP_DIALOG_CART_BUTTON = (By.CLASS_NAME, "btn.btn-primary")
     PRODUCT_NAME = (By.CLASS_NAME, "h1")
