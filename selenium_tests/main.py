@@ -218,7 +218,7 @@ class TestCases(unittest.TestCase):
             main_page.go_to_category(i)
 
             category_page = page.CategoryPage(self.driver)
-            category_page.add_random_products_from_category()
+            category_page.add_random_products_from_category(category_url=self.driver.current_url)
 
         assert True
 
