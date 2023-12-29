@@ -1,13 +1,11 @@
 # Cache, temp and personal files
 
-psdata/.htaccess
 psdata/*.log
 psdata/npm-debug.log.*
 psdata/.sass-cache/
 psdata/cache/*
 psdata/var/cache/*
 psdata/download/*
-psdata/img/*
 psdata/log/*
 psdata/upload/*
 psdata/vendor/*
@@ -38,14 +36,6 @@ psdata/app/config/config.php
 # Themes, modules and overrides
 
 !psdata/modules/*
-psdata/modules/config_*.xml
-psdata/modules/ps_imageslider/images/*
-!psdata/modules/ps_imageslider/images/index.php
-psdata/modules/ps_banner/img/*
-!psdata/modules/ps_banner/img/index.php
-
-!override/*
-psdata//themes/StarterTheme
 
 # Vendors and dependencies
 
