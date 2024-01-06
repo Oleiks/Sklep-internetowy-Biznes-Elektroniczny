@@ -16,6 +16,8 @@ services:
         limits:
           cpus: '0.5'
           memory: 512M
+    volumes:
+      - ./sqldump.sql:var/www/html/sqldump.sql
     command: sh -c './init.sh'
     networks:
       - admin-mysql_default
