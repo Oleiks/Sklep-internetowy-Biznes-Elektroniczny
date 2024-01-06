@@ -17,3 +17,7 @@ services:
           cpus: '0.5'
           memory: 512M
     command: sh -c './init.sh'
+    networks:
+      - admin-mysql_default
+networks:
+  admin-mysql_default:
