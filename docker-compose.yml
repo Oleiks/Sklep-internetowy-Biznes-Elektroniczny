@@ -21,3 +21,4 @@ services:
       - admin-mysql_default
 networks:
   admin-mysql_default:
+    external: true
